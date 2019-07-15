@@ -5,7 +5,7 @@ require "graphql/result_cache/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "graphql-result_cache"
-  spec.version       = Graphql::ResultCache::VERSION
+  spec.version       = GraphQL::ResultCache::VERSION
   spec.authors       = ["Ying Fu"]
   spec.email         = ["saharaying@gmail.com"]
 
