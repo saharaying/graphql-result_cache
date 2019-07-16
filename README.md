@@ -49,6 +49,24 @@ end
 field :theme, Types::ThemeType, null: false, result_cache: true
 ```
 
+4. Wrap query result with `GraphQL::ResultCache::Result`.
+
+```ruby
+class GraphqlController < ApplicationController
+  def execute
+    # ...
+    result = if params[:_json]
+               multiple_execute(params[:_json], context: context)
+             else
+               execute_query(context: context)
+             end
+    render json: GraphQL::ResultCache::Result.new(result)
+  end
+end
+```
+
+## Result Cache Customization
+
 ### Cache condition
 
 ```ruby
@@ -64,7 +82,7 @@ But you can customize the object clause by specify the `key` option.
 ```ruby
 field :theme, Types::ThemeType, null: false, result_cache: { key: :theme_cache_key }
 ```
-The `key` can be either a Symbol or a Proc. 
+The `key` can be either a Symbol or a Proc.
 
 ## Global Configuration
 
