@@ -22,7 +22,65 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+1. Use `GraphQL::ResultCache` as a plugin in your schema.
+ 
+```ruby
+class MySchema < GraphQL::Schema
+  mutation Types::MutationType
+  query Types::QueryType
+ 
+  use GraphQL::ResultCache
+end
+```
+
+2. Add the custom field class to accept `result_cache` metadata.
+
+```ruby
+module Types
+  class BaseObject < GraphQL::Schema::Object
+    field_class GraphQL::ResultCache::Field
+  end
+end
+```
+
+3. Config the fields which need to be cached with `result_cache` definition.
+
+```ruby
+field :theme, Types::ThemeType, null: false, result_cache: true
+```
+
+### Cache condition
+
+```ruby
+field :theme, Types::ThemeType, null: false, result_cache: { if: :published? }
+```
+The `if` condition can be either a Symbol or a Proc.
+
+### Customized cache key
+
+By default, `GraphQL::ResultCache` will generate a cache key combining the field path, arguments and object. 
+But you can customize the object clause by specify the `key` option.
+
+```ruby
+field :theme, Types::ThemeType, null: false, result_cache: { key: :theme_cache_key }
+```
+The `key` can be either a Symbol or a Proc. 
+
+## Global Configuration
+
+`GraphQL::ResultCache` can be configured in initializer.
+
+```ruby
+# config/initializers/graphql/result_cache.rb
+
+GraphQL::ResultCache.configure do |config|
+  config.namespace   = "GraphQL:Result"                         # Cache key namespace
+  config.expires_in  = 1.hour                                   # Expire time for the cache, default to 1.hour
+  config.client_hash = -> { Rails.cache.read(:deploy_version) } # GraphQL client package hash key, used in cache key generation, default to nil
+  config.cache       = Rails.cache                              # The cache object, default to Rails.cache in Rails
+  config.logger      = Rails.logger                             # The Logger, default to Rails.logger in Rails
+end
+```
 
 ## Development
 
@@ -32,7 +90,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/graphql-result_cache. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/saharaying/graphql-result_cache. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## License
 
