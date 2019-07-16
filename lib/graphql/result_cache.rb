@@ -1,4 +1,8 @@
+require 'graphql'
 require 'graphql/result_cache/version'
+require 'graphql/result_cache/field'
+require 'graphql/result_cache/result'
+require 'graphql/result_cache/field_instrument'
 
 module GraphQL
   module ResultCache

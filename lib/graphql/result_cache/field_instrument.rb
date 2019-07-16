@@ -1,3 +1,7 @@
+require 'graphql/result_cache/condition'
+require 'graphql/result_cache/context_config'
+require 'graphql/result_cache/key'
+
 module GraphQL
   module ResultCache
     class FieldInstrument
