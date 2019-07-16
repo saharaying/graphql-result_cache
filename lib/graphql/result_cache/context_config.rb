@@ -7,10 +7,10 @@ module GraphQL
 
       def add context:, key:
         @value[context.query] ||= []
-        cached_result = cache.read key
-        logger.info "GraphQL result cache key #{cached_result ? 'hit' : 'miss'}: #{key}"
-        @value[context.query] << { path: context.path, key: key, result: cached_result }
-        cached_result.present?
+        cached = cache.exist? key
+        logger.info "GraphQL result cache key #{cached ? 'hit' : 'miss'}: #{key}"
+        @value[context.query] << { path: context.path, key: key, result: cached ? cache.read(key) : nil }
+        cached
       end
 
       def process_result result
@@ -26,11 +26,11 @@ module GraphQL
 
       def cache_or_amend_result result, config_of_query
         config_of_query.each do |config|
-          # result already got from cache, need to amend to response
-          if config[:result]
-            deep_merge! result.to_h, 'data' => config[:path].reverse.inject(config[:result]) { |a, n| {n => a} }
-          else
+          if config[:result].nil?
             cache.write config[:key], result.dig('data', *config[:path]), expires_in: expires_in
+          else
+            # result already got from cache, need to amend to response
+            deep_merge! result.to_h, 'data' => config[:path].reverse.inject(config[:result]) { |a, n| {n => a} }
           end
         end
         result
