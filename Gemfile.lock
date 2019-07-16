@@ -1,0 +1,22 @@
+PATH
+  remote: .
+  specs:
+    graphql-result_cache (0.1.0)
+      graphql (~> 1.9)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    graphql (1.9.7)
+    rake (10.5.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bundler (~> 1.16)
+  graphql-result_cache!
+  rake (~> 10.0)
+
+BUNDLED WITH
+   1.16.6
