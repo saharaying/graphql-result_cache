@@ -1,6 +1,9 @@
 module GraphQL
   module ResultCache
     class ContextConfig
+
+      attr_accessor :value
+
       def initialize
         @value = {}
       end
@@ -8,21 +11,25 @@ module GraphQL
       def add context:, key:
         @value[context.query] ||= []
         cached = cache.exist? key
-        logger.info "GraphQL result cache key #{cached ? 'hit' : 'miss'}: #{key}"
+        logger&.info "GraphQL result cache key #{cached ? 'hit' : 'miss'}: #{key}"
         @value[context.query] << { path: context.path, key: key, result: cached ? cache.read(key) : nil }
         cached
       end
 
-      def process_result result
+      def process result
         config_of_query = of_query(result.query)
-        config_of_query.blank? ? result : cache_or_amend_result(result, config_of_query)
+        blank?(config_of_query) ? result : cache_or_amend_result(result, config_of_query)
+      end
+
+      private
+
+      def blank? obj
+        obj.respond_to?(:empty?) ? !!obj.empty? : !obj
       end
 
       def of_query query
         @value[query]
       end
-
-      private
 
       def cache_or_amend_result result, config_of_query
         config_of_query.each do |config|

@@ -29,7 +29,7 @@ module GraphQL
     end
 
     # Default configuration
-    @expires_in = 1.hour
+    @expires_in = 3600              # 1.hour
     @namespace = 'GraphQL:Result'
 
     def self.use(schema_def, options: {})

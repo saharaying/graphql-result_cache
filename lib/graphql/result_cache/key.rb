@@ -31,7 +31,7 @@ module GraphQL
       def object_clause
         case @key
           when Symbol
-            @obj.send(@key)
+            @obj.public_send(@key)
           when Proc
             @key.call(@obj, @args, @ctx)
           when NilClass

@@ -3,6 +3,8 @@ module GraphQL
     class Result
       extend Forwardable
 
+      attr_reader :value
+
       def_delegators :@value, :to_json, :as_json
 
       def initialize query_result
@@ -19,7 +21,7 @@ module GraphQL
 
       def process_each result
         result_cache_config = result.query.context[:result_cache]
-        blank?(result_cache_config) ? result : result_cache_config.process_result(result)
+        blank?(result_cache_config) ? result : result_cache_config.process(result)
       end
 
       def blank? obj
