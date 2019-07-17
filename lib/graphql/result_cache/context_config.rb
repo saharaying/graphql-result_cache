@@ -21,14 +21,14 @@ module GraphQL
         blank?(config_of_query) ? result : cache_or_amend_result(result, config_of_query)
       end
 
+      def of_query query
+        @value[query]
+      end
+
       private
 
       def blank? obj
         obj.respond_to?(:empty?) ? !!obj.empty? : !obj
-      end
-
-      def of_query query
-        @value[query]
       end
 
       def cache_or_amend_result result, config_of_query
