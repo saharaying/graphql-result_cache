@@ -11,8 +11,7 @@ module GraphQL
         cached_resolve_proc = cached_resolve(field)
         field.redefine do
           resolve(cached_resolve_proc)
-          # for cacheable field, change type to be nullable
-          type(field.type.of_type) if field.type.non_null?
+          type(field.type.of_type) if !::GraphQL::ResultCache.introspection? && field.type.non_null?
         end
       end
 

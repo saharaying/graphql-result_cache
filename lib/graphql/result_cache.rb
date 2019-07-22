@@ -16,6 +16,9 @@ module GraphQL
       # c.client_hash = -> { Rails.cache.read(:deploy_version) }
       attr_accessor :client_hash
 
+      attr_accessor :introspection
+      alias introspection? introspection
+
       # ```
       # GraphQL::ResultCache.configure do |c|
       #   c.namespace = "GraphQL:Result"
@@ -31,6 +34,7 @@ module GraphQL
     # Default configuration
     @expires_in = 3600              # 1.hour
     @namespace = 'GraphQL:Result'
+    @introspection = false
 
     def self.use(schema_def, options: {})
       schema_def.instrument(:field, ::GraphQL::ResultCache::FieldInstrument.new)
