@@ -21,7 +21,7 @@ module GraphQL
       private
 
       def path_clause
-        @ctx.path.join('/')
+        @ctx.path.join('.')
       end
 
       def args_clause

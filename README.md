@@ -82,6 +82,18 @@ field :theme, Types::ThemeType, null: false, result_cache: { key: :theme_cache_k
 ```
 The `key` can be either a Symbol or a Proc.
 
+### Callback after cached result applied
+
+An `after_process` callback can be provided, eg. when some dynamic values need to be amended after cached result applied.
+
+```ruby
+field :theme, Types::ThemeType, null: false, result_cache: { after_process: :amend_dynamic_attributes }
+
+def amend_dynamic_attributes(theme_node)
+  theme_node.merge! used_count: object.theme.used_count
+end
+```
+
 ## Global Configuration
 
 `GraphQL::ResultCache` can be configured in initializer.
@@ -95,6 +107,18 @@ GraphQL::ResultCache.configure do |config|
   config.client_hash = -> { Rails.cache.read(:deploy_version) } # GraphQL client package hash key, used in cache key generation, default to nil
   config.cache       = Rails.cache                              # The cache object, default to Rails.cache in Rails
   config.logger      = Rails.logger                             # The Logger, default to Rails.logger in Rails
+end
+```
+
+When the query is an introspection, you can set the value to avoid getting the nullable type for a non-null type.
+```ruby
+class GraphqlController < ApplicationController
+  def execute
+    # ...
+    GraphQL::ResultCache.introspection = params[:query].include? '__schema'
+    result = MySchema.execute(params[:query], variables: ensure_hash(params[:variables]), context: context, operation_name: params[:operationName])  
+    render json: GraphQL::ResultCache::Result.new(result)
+  end
 end
 ```
 

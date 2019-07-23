@@ -1,6 +1,7 @@
 require 'graphql/result_cache/condition'
 require 'graphql/result_cache/context_config'
 require 'graphql/result_cache/key'
+require 'graphql/result_cache/callback'
 
 module GraphQL
   module ResultCache
@@ -25,7 +26,8 @@ module GraphQL
           if Condition.new(cache_config, obj: obj, args: args, ctx: ctx).true?
             ctx[:result_cache] ||= ContextConfig.new
             cache_key = Key.new(obj: obj, args: args, ctx: ctx, key: cache_config[:key])
-            cached = ctx[:result_cache].add context: ctx, key: cache_key.to_s
+            after_process = Callback.new(obj: obj, args: args, ctx: ctx, value: cache_config[:after_process]) if cache_config[:after_process]
+            cached = ctx[:result_cache].add context: ctx, key: cache_key.to_s, after_process: after_process
           end
           old_resolve_proc.call(obj, args, ctx) unless cached
         end

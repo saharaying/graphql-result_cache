@@ -7,45 +7,86 @@ RSpec.describe GraphQL::ResultCache::ContextConfig do
   let(:result) { instance_double('GraphQL::Result', query: query) }
   let(:cache_key) { 'cache_key' }
   let(:cache) { double('cache') }
+  let(:callback) { instance_double('GraphQL::ResultCache::Callback') }
 
   before do
     ::GraphQL::ResultCache.cache = cache
   end
 
   describe '#add' do
-    it 'should add with nil result when not cached' do
-      expect(cache).to receive(:exist?).with(cache_key).and_return false
-      expect(subject.add(context: context, key: cache_key)).to be_falsey
-      expect(subject.value[query]).to eq [path: path, key: cache_key, result: nil]
+    context 'when not cached' do
+      before do
+        expect(cache).to receive(:exist?).with(cache_key).and_return false
+      end
+
+      after do
+        expect(subject.value[query]).to eq [path: path, key: cache_key]
+      end
+
+      it 'should add with nil result' do
+        expect(subject.add(context: context, key: cache_key)).to be_falsey
+      end
+
+      it 'should add without callback' do
+        expect(subject.add(context: context, key: cache_key, after_process: callback)).to be_falsey
+      end
     end
 
-    it 'should add with cached result when cached' do
-      expect(cache).to receive(:exist?).with(cache_key).and_return true
-      allow(cache).to receive(:read).with(cache_key).and_return 'cached_result'
-      expect(subject.add(context: context, key: cache_key)).to be_truthy
-      expect(subject.value[query]).to eq [path: path, key: cache_key, result: 'cached_result']
+    context 'when cached' do
+      before do
+        expect(cache).to receive(:exist?).with(cache_key).and_return true
+        allow(cache).to receive(:read).with(cache_key).and_return 'cached_result'
+      end
+
+      it 'should add with cached result' do
+        expect(subject.add(context: context, key: cache_key)).to be_truthy
+        expect(subject.value[query]).to eq [path: path, key: cache_key, result: 'cached_result']
+      end
+
+      it 'should add with callback' do
+        expect(subject.add(context: context, key: cache_key, after_process: callback)).to be_truthy
+        expect(subject.value[query]).to eq [path: path, key: cache_key, result: 'cached_result', after_process: callback]
+      end
     end
   end
 
   describe '#process' do
     context 'with result cache on query' do
       context 'without cached result' do
-        it 'should write to cache' do
-          subject.value[query] = [{path: path, key: cache_key, result: nil}]
+        after do
           expect(result).to receive(:dig).with('data', *path).and_return 'result_on_path'
           expect(cache).to receive(:write).with(cache_key, 'result_on_path', expires_in: 3600)
           expect(subject.process(result)).to eq result
         end
+
+        it 'should write to cache' do
+          subject.value[query] = [{path: path, key: cache_key}]
+        end
+
+        it 'should not call after_process callback' do
+          subject.value[query] = [{path: path, key: cache_key, after_process: callback}]
+          expect(callback).to receive(:call).never
+        end
       end
 
       context 'with cached result' do
-        it 'should amend cached result to query result' do
-          subject.value[query] = [{path: path, key: cache_key, result: 'result_on_path'}]
-          result_value = {'data' => {'publishedForm' => {'form' => {'name' => 'Name', 'fields' => nil, 'token' => 'ABCD'}}}}
+        let(:result_value) { {'data' => {'publishedForm' => {'form' => {'name' => 'Name', 'fields' => nil, 'token' => 'ABCD'}}}} }
+        let(:expected_result) { {'data' => {'publishedForm' => {'form' => {'name' => 'Name', 'fields' => 'result_on_path', 'token' => 'ABCD'}}}} }
+
+        after do
           allow(result).to receive(:to_h).and_return result_value
           expect(cache).to receive(:write).never
           expect(subject.process(result)).to eq result
-          expect(result_value).to eq 'data' => {'publishedForm' => {'form' => {'name' => 'Name', 'fields' => 'result_on_path', 'token' => 'ABCD'}}}
+          expect(result_value).to eq expected_result
+        end
+
+        it 'should amend cached result to query result' do
+          subject.value[query] = [{path: path, key: cache_key, result: 'result_on_path'}]
+        end
+
+        it 'should call after_process callback' do
+          subject.value[query] = [{path: path, key: cache_key, result: 'result_on_path', after_process: callback}]
+          expect(callback).to receive(:call).with(expected_result.dig('data', *path))
         end
       end
     end
