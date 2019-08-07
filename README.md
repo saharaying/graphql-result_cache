@@ -110,15 +110,10 @@ GraphQL::ResultCache.configure do |config|
 end
 ```
 
-When the query is an introspection, you can set the value to avoid getting the nullable type for a non-null type.
+When using with introspection, you need to assign custom introspection to avoid getting the nullable type for a non-null type.
 ```ruby
-class GraphqlController < ApplicationController
-  def execute
-    # ...
-    GraphQL::ResultCache.introspection = params[:query].include? '__schema'
-    result = MySchema.execute(params[:query], variables: ensure_hash(params[:variables]), context: context, operation_name: params[:operationName])  
-    render json: GraphQL::ResultCache::Result.new(result)
-  end
+class MySchema < GraphQL::Schema
+  introspection ::GraphQL::ResultCache::Introspection
 end
 ```
 

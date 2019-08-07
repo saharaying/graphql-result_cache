@@ -3,6 +3,7 @@ require 'graphql/result_cache/version'
 require 'graphql/result_cache/field'
 require 'graphql/result_cache/result'
 require 'graphql/result_cache/field_instrument'
+require 'graphql/result_cache/introspection'
 
 module GraphQL
   module ResultCache
@@ -15,9 +16,6 @@ module GraphQL
       # to expire the cache when client hash changes, should be a proc. eg:
       # c.client_hash = -> { Rails.cache.read(:deploy_version) }
       attr_accessor :client_hash
-
-      attr_accessor :introspection
-      alias introspection? introspection
 
       # ```
       # GraphQL::ResultCache.configure do |c|
@@ -34,7 +32,6 @@ module GraphQL
     # Default configuration
     @expires_in = 3600              # 1.hour
     @namespace = 'GraphQL:Result'
-    @introspection = false
 
     def self.use(schema_def, options: {})
       schema_def.instrument(:field, ::GraphQL::ResultCache::FieldInstrument.new)

@@ -9,6 +9,7 @@ module GraphQL
       def to_graphql
         field_defn = super # Returns a GraphQL::Field
         field_defn.metadata[:result_cache] = @result_cache_config
+        field_defn.metadata[:original_non_null] = true if @result_cache_config && field_defn.type.non_null?
         field_defn
       end
     end
