@@ -11,7 +11,7 @@ RSpec.describe GraphQL::ResultCache::Key do
   subject { GraphQL::ResultCache::Key.new(obj: obj, args: args, ctx: ctx, key: key) }
 
   it 'should include path clause' do
-    expect(subject.to_s).to include('publishedForm/form/fields')
+    expect(subject.to_s).to include('publishedForm.form.fields')
   end
 
   it 'should include args clause' do

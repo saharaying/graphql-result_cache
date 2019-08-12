@@ -15,7 +15,7 @@ module GraphQL
           when Proc
             @value.call(result_hash, @obj, @args, @ctx)
         end
-        ::GraphQL::ResultCache.logger&.debug "GraphQL result cache callback called for #{@ctx.path.join('.')}"
+        ::GraphQL::ResultCache.logger && ::GraphQL::ResultCache.logger.debug("GraphQL result cache callback called for #{@ctx.path.join('.')}")
       end
     end
   end

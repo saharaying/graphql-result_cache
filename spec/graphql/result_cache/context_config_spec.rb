@@ -86,7 +86,7 @@ RSpec.describe GraphQL::ResultCache::ContextConfig do
 
         it 'should call after_process callback' do
           subject.value[query] = [{path: path, key: cache_key, result: 'result_on_path', after_process: callback}]
-          expect(callback).to receive(:call).with(expected_result.dig('data', *path))
+          expect(callback).to receive(:call).with(expected_result['data']['publishedForm']['form']['fields'])
         end
       end
     end
