@@ -11,6 +11,7 @@ module GraphQL
       attr_accessor :expires_in
       attr_accessor :namespace
       attr_accessor :cache
+      attr_accessor :cache_write_options
       attr_accessor :logger
 
       # to expire the cache when client hash changes, should be a proc. eg:
