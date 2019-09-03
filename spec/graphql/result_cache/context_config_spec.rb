@@ -54,7 +54,7 @@ RSpec.describe GraphQL::ResultCache::ContextConfig do
     context 'with result cache on query' do
       context 'without cached result' do
         after do
-          expect(result).to receive(:dig).with('data', *path).and_return 'result_on_path'
+          expect(subject).to receive(:dig).with(result, 'data', *path).and_return 'result_on_path'
           expect(cache).to receive(:write).with(cache_key, 'result_on_path', expires_in: 3600)
           expect(subject.process(result)).to eq result
         end
@@ -97,7 +97,7 @@ RSpec.describe GraphQL::ResultCache::ContextConfig do
 
       it 'should return result without process' do
         subject.value[other_query] = [{path: path, key: cache_key, result: nil}]
-        expect(result).to receive(:dig).never
+        expect(subject).to receive(:dig).never
         expect(cache).to receive(:write).never
         expect(subject.process(result)).to eq result
       end
