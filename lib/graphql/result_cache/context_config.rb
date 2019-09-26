@@ -39,7 +39,7 @@ module GraphQL
       def cache_or_amend_result result, config_of_query
         config_of_query.each do |config|
           if config[:result].nil?
-            cache.write config[:key], result.dig('data', *config[:path]), cache_write_options.merge(expires_in: expires_in)
+            cache.write config[:key], dig(result, 'data', *config[:path]), cache_write_options.merge(expires_in: expires_in)
           else
             # result already got from cache, need to amend to response
             result_hash = result.to_h
