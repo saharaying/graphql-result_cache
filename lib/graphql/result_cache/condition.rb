@@ -9,14 +9,22 @@ module GraphQL
       end
 
       def true?
+        return false if except?
         case @if
-          when Symbol
-            @obj.send(@if)
-          when Proc
-            @if.call(@obj, @args, @ctx)
-          else
-            true
+        when Symbol
+          @obj.send(@if)
+        when Proc
+          @if.call(@obj, @args, @ctx)
+        else
+          true
         end
+      end
+
+      private
+
+      def except?
+        except = ::GraphQL::ResultCache.except
+        except.is_a?(Proc) ? except.call(@ctx) : except
       end
     end
   end

@@ -105,6 +105,7 @@ GraphQL::ResultCache.configure do |config|
   config.namespace   = "GraphQL:Result"                         # Cache key namespace
   config.expires_in  = 1.hour                                   # Expire time for the cache, default to 1.hour
   config.client_hash = -> { Rails.cache.read(:deploy_version) } # GraphQL client package hash key, used in cache key generation, default to nil
+  config.except = ->(ctx) { !ctx[:result_cacheable] }           # Exception rule, skip the cache while evaluated as true, default to nil
   config.cache       = Rails.cache                              # The cache object, default to Rails.cache in Rails
   config.logger      = Rails.logger                             # The Logger, default to Rails.logger in Rails
 end

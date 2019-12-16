@@ -18,6 +18,9 @@ module GraphQL
       # c.client_hash = -> { Rails.cache.read(:deploy_version) }
       attr_accessor :client_hash
 
+      # global condition, skip the cache when the value is true, should be a proc.
+      attr_accessor :except
+
       # ```
       # GraphQL::ResultCache.configure do |c|
       #   c.namespace = "GraphQL:Result"
