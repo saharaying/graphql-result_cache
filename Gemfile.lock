@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    graphql-result_cache (0.1.6)
+    graphql-result_cache (0.1.7)
       graphql (~> 1.9)
 
 GEM
