@@ -9,10 +9,10 @@ RSpec.describe GraphQL::ResultCache::FieldExtension do
 
   describe '#resolve' do
     subject do
-      extension.resolve(object: obj, arguments: args) { |obj, args| true }
+      extension.resolve(object: obj, arguments: args, context: ctx) { |obj, args| true }
     end
 
-    let(:obj) { double('obj', context: ctx, object: nil) }
+    let(:obj) { double('obj', object: nil) }
     let(:args) { double('args', to_h: {}) }
     let(:ctx) { instance_double('GraphQL::Context', path: path) }
     let(:path) { %w[publishedForm form fields] }
@@ -23,6 +23,8 @@ RSpec.describe GraphQL::ResultCache::FieldExtension do
       let(:cache_config) { {} }
 
       before do
+        allow(ctx).to receive(:[]).with(:result_cacheable).and_return true
+
         expect(ctx).to receive(:[])
           .with(:result_cache)
           .twice
@@ -79,6 +81,8 @@ RSpec.describe GraphQL::ResultCache::FieldExtension do
       let(:cached_object) { double('cached_object') }
 
       it 'shortcuts field execution' do
+        allow(ctx).to receive(:[]).with(:result_cacheable).and_return true
+
         expect(ctx).to receive(:[])
           .with(:result_cache)
           .twice
