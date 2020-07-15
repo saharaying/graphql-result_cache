@@ -8,9 +8,8 @@ require 'graphql/result_cache/callback'
 module GraphQL
   module ResultCache
     class FieldExtension < GraphQL::Schema::FieldExtension
-      def resolve(object:, arguments:, **rest)
+      def resolve(object:, arguments:, context:)
         cache_config = options.is_a?(Hash) ? options : {}
-        context = object.context
 
         if Condition.new(cache_config, obj: object, args: arguments, ctx: context).true?
           context[:result_cache] ||= ContextConfig.new
