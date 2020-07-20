@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe GraphQL::ResultCache::FieldExtension do
-  let(:field) { instance_double('GraphQL::Schema::Field') }
+  let(:field) { instance_double('GraphQL::Schema::Field', name: 'publishedForm') }
   let(:options) { nil }
   let(:extension) do
     GraphQL::ResultCache::FieldExtension.new(field: field, options: options)
@@ -17,7 +17,7 @@ RSpec.describe GraphQL::ResultCache::FieldExtension do
     let(:ctx) { instance_double('GraphQL::Context', path: path) }
     let(:path) { %w[publishedForm form fields] }
     let(:context_config) { instance_double('GraphQL::ResultCache::ContextConfig') }
-    let(:cache_key) { 'GraphQL:Result:publishedForm.form.fields' }
+    let(:cache_key) { 'GraphQL:Result:publishedForm.form.fields:publishedForm' }
 
     context 'when condition passed' do
       let(:cache_config) { {} }
