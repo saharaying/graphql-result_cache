@@ -6,9 +6,12 @@ RSpec.describe GraphQL::ResultCache::Key do
   let(:args) { {x: 1, y: 's'} }
   let(:path) { %w(publishedForm form fields) }
   let(:ctx) { double('ctx', path: path) }
+  let(:field) { nil }
   let(:key) { nil }
 
-  subject { GraphQL::ResultCache::Key.new(obj: obj, args: args, ctx: ctx, key: key) }
+  subject do
+    described_class.new(obj: obj, args: args, ctx: ctx, key: key, field: field)
+  end
 
   it 'should include path clause' do
     expect(subject.to_s).to include('publishedForm.form.fields')
@@ -16,6 +19,23 @@ RSpec.describe GraphQL::ResultCache::Key do
 
   it 'should include args clause' do
     expect(subject.to_s).to include('x:1:y:s')
+  end
+
+  context 'without context' do
+    let(:ctx) { nil }
+
+    it 'should produce key' do
+      expect(subject.to_s).not_to include('publishedForm.form.fields')
+    end
+  end
+
+  context 'with field clause' do
+    let(:ctx) { nil }
+    let(:field) { double('field', name: 'publishedForm') }
+
+    it 'should include field name' do
+      expect(subject.to_s).to include('publishedForm')
+    end
   end
 
   describe '#object_clause' do
