@@ -3,9 +3,7 @@ require 'spec_helper'
 RSpec.describe GraphQL::ResultCache::FieldExtension do
   let(:field) { instance_double('GraphQL::Schema::Field', name: 'publishedForm') }
   let(:options) { nil }
-  let(:extension) do
-    GraphQL::ResultCache::FieldExtension.new(field: field, options: options)
-  end
+  let(:extension) { described_class.new(field: field, options: options) }
 
   describe '#resolve' do
     subject do
@@ -49,7 +47,7 @@ RSpec.describe GraphQL::ResultCache::FieldExtension do
 
         it 'adds field to cache' do
           expect(GraphQL::ResultCache::Callback).to receive(:new)
-            .with(obj: obj, args: args, ctx: ctx, value: :foo)
+            .with(obj: obj, args: args, ctx: ctx, value: :foo, field: field)
             .and_return(callback)
 
           expect(context_config).to receive(:add)

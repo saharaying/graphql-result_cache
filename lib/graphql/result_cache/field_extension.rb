@@ -48,6 +48,7 @@ module GraphQL
           obj: object,
           args: arguments,
           ctx: context,
+          field: @field,
           value: config[:after_process]
         )
       end
