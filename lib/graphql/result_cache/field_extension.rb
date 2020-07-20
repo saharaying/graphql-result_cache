@@ -36,6 +36,7 @@ module GraphQL
           obj: object,
           args: arguments,
           ctx: context,
+          field: @field,
           key: config[:key]
         )
       end
