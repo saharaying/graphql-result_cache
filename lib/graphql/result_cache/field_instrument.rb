@@ -21,7 +21,7 @@ module GraphQL
       def cached_resolve field
         old_resolve_proc = field.resolve_proc
         cache_config = field.metadata[:result_cache]
-        cache_config = {} unless cache_config.is_a?(Hash)
+        cache_config = cache_config.respond_to?(:to_h) ? cache_config.to_h : {}
         lambda do |obj, args, ctx|
           if Condition.new(cache_config, obj: obj, args: args, ctx: ctx).true?
             ctx[:result_cache] ||= ContextConfig.new

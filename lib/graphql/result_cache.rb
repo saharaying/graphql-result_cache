@@ -1,8 +1,10 @@
 require 'graphql'
 require 'graphql/result_cache/version'
+require 'graphql/result_cache/errors'
 require 'graphql/result_cache/field'
 require 'graphql/result_cache/result'
 require 'graphql/result_cache/field_instrument'
+require 'graphql/result_cache/field_extension'
 require 'graphql/result_cache/introspection'
 
 module GraphQL
@@ -38,7 +40,14 @@ module GraphQL
     @namespace = 'GraphQL:Result'
 
     def self.use(schema_def, options: {})
-      schema_def.instrument(:field, ::GraphQL::ResultCache::FieldInstrument.new)
+      if Gem::Version.new(GraphQL::VERSION) >= Gem::Version.new('1.10.0')
+        raise(
+          ::GraphQL::ResultCache::DeprecatedError,
+          'Field Instruments are no longer supported, please use Field Extensions'
+        )
+      else
+        schema_def.instrument(:field, ::GraphQL::ResultCache::FieldInstrument.new)
+      end
     end
   end
 end
