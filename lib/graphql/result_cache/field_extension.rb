@@ -9,7 +9,7 @@ module GraphQL
   module ResultCache
     class FieldExtension < GraphQL::Schema::FieldExtension
       def resolve(object:, arguments:, context:)
-        cache_config = options.is_a?(Hash) ? options : {}
+        cache_config = options.respond_to?(:to_h) ? options.to_h : {}
 
         if Condition.new(cache_config, obj: object, args: arguments, ctx: context).true?
           context[:result_cache] ||= ContextConfig.new

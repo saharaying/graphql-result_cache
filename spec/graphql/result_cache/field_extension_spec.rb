@@ -10,7 +10,7 @@ RSpec.describe GraphQL::ResultCache::FieldExtension do
       extension.resolve(object: obj, arguments: args, context: ctx) { |obj, args| true }
     end
 
-    let(:obj) { double('obj', object: nil) }
+    let(:obj) { double('obj', object: nil, cache_key: 'object_cache_key') }
     let(:args) { double('args', to_h: {}) }
     let(:ctx) { instance_double('GraphQL::Context', path: path) }
     let(:path) { %w[publishedForm form fields] }
@@ -52,6 +52,21 @@ RSpec.describe GraphQL::ResultCache::FieldExtension do
 
           expect(context_config).to receive(:add)
             .with(context: ctx, key: cache_key, after_process: callback)
+
+          is_expected.to be true
+        end
+      end
+
+      context 'when cache config as object' do
+        let(:options) { double('cache_config', to_h: { key: :cache_key }) }
+        let(:cache_config) { options.to_h }
+        let(:cache_key) do
+          'GraphQL:Result:publishedForm.form.fields:publishedForm:object_cache_key'
+        end
+
+        it 'adds field to cache' do
+          expect(context_config).to receive(:add)
+            .with(context: ctx, key: cache_key, after_process: nil)
 
           is_expected.to be true
         end
