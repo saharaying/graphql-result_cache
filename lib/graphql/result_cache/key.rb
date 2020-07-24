@@ -29,7 +29,7 @@ module GraphQL
       end
 
       def field_clause
-        @field.name unless @field.nil?
+        @field.path unless @field.nil?
       end
 
       def args_clause
