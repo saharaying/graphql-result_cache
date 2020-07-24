@@ -1,9 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe GraphQL::ResultCache::Callback do
-  let(:field) { instance_double('GraphQL::Schema::Field', name: 'publishedForm') }
-  # let(:options) { nil }
-
+  let(:field) { instance_double('GraphQL::Schema::Field', path: 'publishedForm') }
   let(:object) { double('object', a: 'object_a') }
   let(:args) { { x: 1, y: 's' } }
   let(:ctx) { instance_double('GraphQL::Context', path: %w[publishedForm form fields]) }

@@ -31,7 +31,7 @@ RSpec.describe GraphQL::ResultCache::Key do
 
   context 'with field clause' do
     let(:ctx) { nil }
-    let(:field) { double('field', name: 'publishedForm') }
+    let(:field) { double('field', path: 'publishedForm') }
 
     it 'should include field name' do
       expect(subject.to_s).to include('publishedForm')

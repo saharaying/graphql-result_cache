@@ -22,7 +22,7 @@ module GraphQL
       private
 
       def callback_caller
-        ctx_path || @field.name
+        ctx_path || @field.path
       end
 
       def ctx_path
