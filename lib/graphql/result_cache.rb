@@ -43,4 +43,6 @@ module GraphQL
   end
 end
 
+GraphQL::Schema::Field.accepts_definition(:result_cache)
+
 require 'graphql/result_cache/rails' if defined?(::Rails::Engine)

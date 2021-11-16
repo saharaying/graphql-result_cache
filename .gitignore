@@ -6,6 +6,7 @@
 /pkg/
 /spec/reports/
 /tmp/
+/tags
 
 /.idea/
 /graphql-result_cache-*.gem

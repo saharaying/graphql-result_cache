@@ -79,19 +79,19 @@ RSpec.describe GraphQL::ResultCache::Key do
       let(:client_hash_value) { Time.now.to_i }
 
       it 'should call the proc' do
-        ::GraphQL::ResultCache.client_hash = -> { client_hash_value }
+        allow(::GraphQL::ResultCache).to receive(:client_hash).and_return -> { client_hash_value }
         expect(clause).to eq(client_hash_value)
       end
     end
 
     context 'when client hash is a scala value' do
       it 'should be nil when client hash not set' do
-        ::GraphQL::ResultCache.client_hash = nil
+        allow(::GraphQL::ResultCache).to receive(:client_hash).and_return nil
         expect(clause).to be_nil
       end
 
       it 'should be the value when client hash is a string' do
-        ::GraphQL::ResultCache.client_hash = 'abcdef'
+        allow(::GraphQL::ResultCache).to receive(:client_hash).and_return 'abcdef'
         expect(clause).to eq('abcdef')
       end
     end

@@ -30,8 +30,8 @@ RSpec.describe GraphQL::ResultCache::Condition do
 
   context 'with global except' do
     context 'as proc' do
-      before(:all) do
-        ::GraphQL::ResultCache.except = ->(ctx) { !ctx[:result_cacheable] }
+      before do
+        allow(::GraphQL::ResultCache).to receive(:except).and_return ->(ctx) { !ctx[:result_cacheable] }
       end
 
       context 'evaluated as true' do
