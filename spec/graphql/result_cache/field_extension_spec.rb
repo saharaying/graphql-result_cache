@@ -12,10 +12,15 @@ RSpec.describe GraphQL::ResultCache::FieldExtension do
 
     let(:obj) { double('obj', object: nil, cache_key: 'object_cache_key') }
     let(:args) { double('args', to_h: {}) }
-    let(:ctx) { instance_double('GraphQL::Context', path: path) }
+    let(:query) { instance_double('GraphQL::Query') }
     let(:path) { %w[publishedForm form fields] }
+    let(:ctx) do
+      instance_double('GraphQL::Context', query: query).tap do |context|
+        allow(context).to receive(:namespace).with(:interpreter).and_return current_path: path
+      end
+    end
     let(:context_config) { instance_double('GraphQL::ResultCache::ContextConfig') }
-    let(:cache_key) { 'GraphQL:Result:publishedForm.form.fields:publishedForm' }
+    let(:cache_key) { 'GraphQL:Result:publishedForm.form.fields' }
 
     context 'when condition passed' do
       let(:cache_config) { {} }
@@ -24,18 +29,18 @@ RSpec.describe GraphQL::ResultCache::FieldExtension do
         allow(ctx).to receive(:[]).with(:result_cacheable).and_return true
 
         expect(ctx).to receive(:[])
-          .with(:result_cache)
-          .twice
-          .and_return(context_config)
+                         .with(:result_cache)
+                         .twice
+                         .and_return(context_config)
 
         expect(GraphQL::ResultCache::Condition).to receive(:new)
-          .with(cache_config, obj: obj, args: args, ctx: ctx)
-          .and_call_original
+                                                     .with(cache_config, obj: obj, args: args, ctx: ctx)
+                                                     .and_call_original
       end
 
       it 'adds field to cache' do
         expect(context_config).to receive(:add)
-          .with(context: ctx, key: cache_key, after_process: nil)
+                                    .with(query: query, path: path, key: cache_key, after_process: nil)
 
         is_expected.to be true
       end
@@ -47,11 +52,11 @@ RSpec.describe GraphQL::ResultCache::FieldExtension do
 
         it 'adds field to cache' do
           expect(GraphQL::ResultCache::Callback).to receive(:new)
-            .with(obj: obj, args: args, ctx: ctx, value: :foo, field: field)
-            .and_return(callback)
+                                                      .with(obj: obj, args: args, ctx: ctx, value: :foo)
+                                                      .and_return(callback)
 
           expect(context_config).to receive(:add)
-            .with(context: ctx, key: cache_key, after_process: callback)
+                                      .with(query: query, path: path, key: cache_key, after_process: callback)
 
           is_expected.to be true
         end
@@ -61,12 +66,12 @@ RSpec.describe GraphQL::ResultCache::FieldExtension do
         let(:options) { double('cache_config', to_h: { key: :cache_key }) }
         let(:cache_config) { options.to_h }
         let(:cache_key) do
-          'GraphQL:Result:publishedForm.form.fields:publishedForm:object_cache_key'
+          'GraphQL:Result:publishedForm.form.fields:object_cache_key'
         end
 
         it 'adds field to cache' do
           expect(context_config).to receive(:add)
-            .with(context: ctx, key: cache_key, after_process: nil)
+                                      .with(query: query, path: path, key: cache_key, after_process: nil)
 
           is_expected.to be true
         end
@@ -80,8 +85,8 @@ RSpec.describe GraphQL::ResultCache::FieldExtension do
 
       it 'skips caching' do
         expect(GraphQL::ResultCache::Condition).to receive(:new)
-          .with({}, obj: obj, args: args, ctx: ctx)
-          .and_return(condition)
+                                                     .with({}, obj: obj, args: args, ctx: ctx)
+                                                     .and_return(condition)
 
         is_expected.to be true
       end
@@ -97,13 +102,13 @@ RSpec.describe GraphQL::ResultCache::FieldExtension do
         allow(ctx).to receive(:[]).with(:result_cacheable).and_return true
 
         expect(ctx).to receive(:[])
-          .with(:result_cache)
-          .twice
-          .and_return(context_config)
+                         .with(:result_cache)
+                         .twice
+                         .and_return(context_config)
 
         expect(GraphQL::ResultCache::Condition).to receive(:new)
-          .with({}, obj: obj, args: args, ctx: ctx)
-          .and_call_original
+                                                     .with({}, obj: obj, args: args, ctx: ctx)
+                                                     .and_call_original
 
         is_expected.to be nil
       end

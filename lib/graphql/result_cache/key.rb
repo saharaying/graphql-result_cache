@@ -3,19 +3,17 @@
 module GraphQL
   module ResultCache
     class Key
-      def initialize(obj:, args:, ctx: nil, key: nil, field: nil)
+      def initialize(obj:, args:, ctx: nil, key: nil)
         @obj = obj
         @args = args
         @ctx = ctx
         @key = key
-        @field = field
       end
 
       def to_s
         @to_s ||= [
             ::GraphQL::ResultCache.namespace,
             path_clause,
-            field_clause,
             args_clause,
             object_clause,
             client_hash_clause
@@ -25,11 +23,7 @@ module GraphQL
       private
 
       def path_clause
-        @ctx.path.join('.') unless @ctx.nil?
-      end
-
-      def field_clause
-        @field.path unless @field.nil?
+        @ctx.namespace(:interpreter)[:current_path].join('.') unless @ctx.nil?
       end
 
       def args_clause

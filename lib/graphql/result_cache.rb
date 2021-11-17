@@ -39,7 +39,7 @@ module GraphQL
     @expires_in = 3600              # 1.hour
     @namespace = 'GraphQL:Result'
 
-    def self.use(schema_def, options: {})
+    def self.use(schema_def)
       if Gem::Version.new(GraphQL::VERSION) >= Gem::Version.new('1.10.0')
         raise(
           ::GraphQL::ResultCache::DeprecatedError,

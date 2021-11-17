@@ -8,16 +8,16 @@ module GraphQL
         @value = {}
       end
 
-      def add context:, key:, after_process: nil
-        @value[context.query] ||= []
+      def add query:, path:, key:, after_process: nil
+        @value[query] ||= []
         cached = cache.exist? key
         logger && logger.info("GraphQL result cache key #{cached ? 'hit' : 'miss'}: #{key}")
-        config_value = { path: context.path, key: key }
+        config_value = { path: path, key: key }
         if cached
           config_value[:result] = cache.read(key)
           config_value[:after_process] = after_process if after_process
         end
-        @value[context.query] << config_value
+        @value[query] << config_value
         cached
       end
 

@@ -25,7 +25,8 @@ module GraphQL
         cache_key = key(object, arguments, context, cache_config)
         after_process = after_process(object, arguments, context, cache_config)
         context[:result_cache].add(
-          context: context,
+          query: context.query,
+          path: context.namespace(:interpreter)[:current_path],
           key: cache_key.to_s,
           after_process: after_process
         )
@@ -36,7 +37,6 @@ module GraphQL
           obj: object,
           args: arguments,
           ctx: context,
-          field: @field,
           key: config[:key]
         )
       end
@@ -48,7 +48,6 @@ module GraphQL
           obj: object,
           args: arguments,
           ctx: context,
-          field: @field,
           value: config[:after_process]
         )
       end

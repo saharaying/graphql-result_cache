@@ -1,12 +1,11 @@
 module GraphQL
   module ResultCache
     class Callback
-      def initialize(obj:, args:, ctx:, value:, field: nil)
+      def initialize(obj:, args:, ctx:, value:)
         @obj = obj
         @args = args
         @ctx = ctx
         @value = value
-        @field = field
       end
 
       def call(result_hash)
@@ -16,17 +15,13 @@ module GraphQL
           when Proc
             @value.call(result_hash, @obj, @args, @ctx)
         end
-        ::GraphQL::ResultCache.logger && ::GraphQL::ResultCache.logger.debug("GraphQL result cache callback called for #{callback_caller}")
+        ::GraphQL::ResultCache.logger && ::GraphQL::ResultCache.logger.debug("GraphQL result cache callback called for #{ctx_path}")
       end
 
       private
 
-      def callback_caller
-        ctx_path || @field.path
-      end
-
       def ctx_path
-        @ctx.path.empty? ? nil : @ctx.path.join('.')
+        @ctx.namespace(:interpreter)[:current_path].join('.')
       end
     end
   end

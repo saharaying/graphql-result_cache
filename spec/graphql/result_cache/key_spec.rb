@@ -5,12 +5,15 @@ RSpec.describe GraphQL::ResultCache::Key do
   let(:obj) { double('obj', a: true, b: false, object: object, cache_key: 'obj_cache_key') }
   let(:args) { {x: 1, y: 's'} }
   let(:path) { %w(publishedForm form fields) }
-  let(:ctx) { double('ctx', path: path) }
-  let(:field) { nil }
+  let(:ctx) do
+    instance_double('GraphQL::Context').tap do |context|
+      allow(context).to receive(:namespace).with(:interpreter).and_return current_path: path
+    end
+  end
   let(:key) { nil }
 
   subject do
-    described_class.new(obj: obj, args: args, ctx: ctx, key: key, field: field)
+    described_class.new(obj: obj, args: args, ctx: ctx, key: key)
   end
 
   it 'should include path clause' do
@@ -29,15 +32,6 @@ RSpec.describe GraphQL::ResultCache::Key do
     end
   end
 
-  context 'with field clause' do
-    let(:ctx) { nil }
-    let(:field) { double('field', path: 'publishedForm') }
-
-    it 'should include field name' do
-      expect(subject.to_s).to include('publishedForm')
-    end
-  end
-
   describe '#object_clause' do
     let(:clause) { subject.send(:object_clause) }
 
@@ -50,7 +44,7 @@ RSpec.describe GraphQL::ResultCache::Key do
     end
 
     context 'when key is a proc' do
-      let(:key) { ->(obj, args, ctx) { "#{obj.object.a}-#{args[:x]}-#{ctx.path.join('/')}" } }
+      let(:key) { ->(obj, args, ctx) { "#{obj.object.a}-#{args[:x]}-#{ctx.namespace(:interpreter)[:current_path].join('/')}" } }
 
       it 'should call the proc' do
         expect(clause).to eq('object_a-1-publishedForm/form/fields')

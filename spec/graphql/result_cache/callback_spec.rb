@@ -1,16 +1,19 @@
 require 'spec_helper'
 
 RSpec.describe GraphQL::ResultCache::Callback do
-  let(:field) { instance_double('GraphQL::Schema::Field', path: 'publishedForm') }
   let(:object) { double('object', a: 'object_a') }
   let(:args) { { x: 1, y: 's' } }
-  let(:ctx) { instance_double('GraphQL::Context', path: %w[publishedForm form fields]) }
+  let(:ctx) do
+    instance_double('GraphQL::Context').tap do |context|
+      allow(context).to receive(:namespace).with(:interpreter).and_return current_path: %w[publishedForm form fields]
+    end
+  end
   let(:value) { :a }
 
   describe '#call' do
     subject do
       described_class
-        .new(obj: object, args: args, ctx: ctx, value: value, field: field)
+        .new(obj: object, args: args, ctx: ctx, value: value)
         .call(result)
     end
 
@@ -43,17 +46,7 @@ RSpec.describe GraphQL::ResultCache::Callback do
       context 'with context path' do
         it 'logs callback' do
           expect(logger).to receive(:debug)
-            .with('GraphQL result cache callback called for publishedForm.form.fields')
-          subject
-        end
-      end
-
-      context 'with field name' do
-        let(:ctx) { instance_double('GraphQL::Context', path: %w[]) }
-
-        it 'logs callback' do
-          expect(logger).to receive(:debug)
-            .with('GraphQL result cache callback called for publishedForm')
+                              .with('GraphQL result cache callback called for publishedForm.form.fields')
           subject
         end
       end
