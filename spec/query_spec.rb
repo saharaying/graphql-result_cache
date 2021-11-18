@@ -6,7 +6,7 @@ require 'fixtures/schema'
 
 RSpec.describe 'query with result cache' do
   let(:cache_store) { double('cache_store') }
-  let(:result) { GraphQL::ResultCache::Result.new(Schema.execute(query_string)).value }
+  let(:result) { Schema.execute(query_string) }
 
   before do
     allow(GraphQL::ResultCache).to receive(:cache).and_return cache_store
@@ -43,7 +43,7 @@ RSpec.describe 'query with result cache' do
   }
       QUERY
     end
-    let(:form_obj) { { setting: { locale: 'en' } } }
+    let(:form_obj) { OpenStruct.new setting: OpenStruct.new(locale: 'en') }
     let(:cache_key) { "GraphQL:Result:form.setting.locale:#{form_obj[:setting].object_id}" }
     before do
       allow_any_instance_of(QueryType).to receive(:form).and_return form_obj

@@ -1,27 +1,24 @@
 module GraphQL
   module ResultCache
     class Result
-      extend Forwardable
-
-      attr_reader :value
-
-      def_delegators :@value, :to_json, :as_json
-
       def initialize query_result
         @_result = query_result
-        @value = process_with_result_cache
+      end
+
+      def process!
+        process_with_result_cache
       end
 
       private
 
       def process_with_result_cache
         return process_each(@_result) unless @_result.is_a?(Array)
-        @_result.map { |result| process_each(result) }
+        @_result.each { |result| process_each(result) }
       end
 
       def process_each result
         result_cache_config = result.query.context[:result_cache]
-        blank?(result_cache_config) ? result : result_cache_config.process(result)
+        result_cache_config.process(result) unless blank?(result_cache_config)
       end
 
       def blank? obj

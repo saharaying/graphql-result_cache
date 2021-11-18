@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe GraphQL::ResultCache::FieldExtension do
+RSpec.describe GraphQL::ResultCache::Schema::FieldExtension do
   let(:field) { instance_double('GraphQL::Schema::Field', path: 'publishedForm') }
   let(:options) { nil }
   let(:extension) { described_class.new(field: field, options: options) }

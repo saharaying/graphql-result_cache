@@ -1,8 +1,9 @@
 require 'graphql'
 require 'graphql/result_cache/version'
-require 'graphql/result_cache/field'
 require 'graphql/result_cache/result'
-require 'graphql/result_cache/field_extension'
+require 'graphql/result_cache/schema/field'
+require 'graphql/result_cache/schema/field_extension'
+require 'graphql/result_cache/schema/query_instrument'
 require 'graphql/result_cache/introspection'
 
 module GraphQL
@@ -31,10 +32,15 @@ module GraphQL
       def configure
         yield self
       end
+
+      def use(schema_def)
+        return schema_def.instrument(:query, Schema::QueryInstrument) if schema_def.interpreter?
+        raise 'Please use the graphql gem version >= 1.10 with GraphQL::Execution::Interpreter'
+      end
     end
 
     # Default configuration
-    @expires_in = 3600              # 1.hour
+    @expires_in = 3600 # 1.hour
     @namespace = 'GraphQL:Result'
   end
 end

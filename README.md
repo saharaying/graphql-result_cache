@@ -36,7 +36,7 @@ end
 ```ruby
 module Types
   class BaseObject < GraphQL::Schema::Object
-    field_class GraphQL::ResultCache::Field
+    field_class GraphQL::ResultCache::Schema::Field
   end
 end
 ```
@@ -49,7 +49,7 @@ which is no longer supported as of `graphql 1.10.0`.
 
 #### Field Extension:
 ```ruby
-field :theme, Types::ThemeType, null: false, extensions: [GraphQL::ResultCache::FieldExtension]
+field :theme, Types::ThemeType, null: false, extensions: [GraphQL::ResultCache::Schema::FieldExtension]
 ```
 
 #### Field Instrument:
@@ -83,7 +83,7 @@ The `if` condition can be either a Symbol or a Proc.
 #### Field Extension
 ```ruby
 field :theme, Types::ThemeType, null: false, do
-  extension GraphQL::ResultCache::FieldExtension, if: :published?
+  extension GraphQL::ResultCache::Schema::FieldExtension, if: :published?
 end
 ```
 
@@ -99,8 +99,8 @@ But you can customize the object clause by specify the `key` option.
 
 #### Field Extension
 ```ruby
-field :theme, Types::ThemeType, null: false, do
-  extension GraphQL::ResultCache::FieldExtension, key: :theme_cache_key
+field :theme, Types::ThemeType, null: false do
+  extension GraphQL::ResultCache::Schema::FieldExtension, key: :theme_cache_key
 end
 ```
 
@@ -116,8 +116,8 @@ An `after_process` callback can be provided, eg. when some dynamic values need t
 
 #### Field Extension
 ```ruby
-field :theme, Types::ThemeType, null: false, do
-  extension GraphQL::ResultCache::FieldExtension, after_process: :amend_dynamic_attributes
+field :theme, Types::ThemeType, null: false do
+  extension GraphQL::ResultCache::Schema::FieldExtension, after_process: :amend_dynamic_attributes
 end
 ```
 
