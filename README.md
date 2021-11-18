@@ -2,6 +2,8 @@
 
 This gem is to cache the json result, instead of resolved object.
 
+If you are using `graphql < 1.10.0` or without `GraphQL::Execution::Interpreter`, please [read this](https://github.com/saharaying/graphql-result_cache/wiki/GraphQL::ResultCache-(v0.1.x)).
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -21,65 +23,57 @@ Or install it yourself as:
 ## Usage
 
 1. Use `GraphQL::ResultCache` as a plugin in your schema.
- 
+
 ```ruby
 class MySchema < GraphQL::Schema
+  # Default value for graphql v1.12.x
+  use GraphQL::Execution::Interpreter
+  use GraphQL::Analysis::AST
+
+  introspection GraphQL::ResultCache::Introspection
+
   mutation Types::MutationType
   query Types::QueryType
- 
+
   use GraphQL::ResultCache
 end
 ```
 
-2. Add the custom field class to accept `result_cache` metadata.
+2. Add the custom field class to accept `result_cache` definition.
 
 ```ruby
 module Types
   class BaseObject < GraphQL::Schema::Object
-    field_class GraphQL::ResultCache::Field
+    field_class GraphQL::ResultCache::Schema::Field
   end
 end
 ```
 
-3. Config the fields which need to be cached with `result_cache` definition.
+3. Config the fields which need to be cached.
 
 ```ruby
 field :theme, Types::ThemeType, null: false, result_cache: true
-```
-
-4. Wrap query result with `GraphQL::ResultCache::Result`.
-
-```ruby
-class GraphqlController < ApplicationController
-  def execute
-    # ...
-    result = if params[:_json]
-               multiple_execute(params[:_json], context: context)
-             else
-               execute_query(context: context)
-             end
-    render json: GraphQL::ResultCache::Result.new(result)
-  end
-end
 ```
 
 ## Result Cache Customization
 
 ### Cache condition
 
+The `if` condition can be either a Symbol or a Proc.
+
 ```ruby
 field :theme, Types::ThemeType, null: false, result_cache: { if: :published? }
 ```
-The `if` condition can be either a Symbol or a Proc.
 
 ### Customized cache key
 
-By default, `GraphQL::ResultCache` will generate a cache key combining the field path, arguments and object. 
+By default, `GraphQL::ResultCache` will generate a cache key combining the field path, arguments and object.
 But you can customize the object clause by specify the `key` option.
 
 ```ruby
 field :theme, Types::ThemeType, null: false, result_cache: { key: :theme_cache_key }
 ```
+
 The `key` can be either a Symbol or a Proc.
 
 ### Callback after cached result applied
@@ -114,7 +108,7 @@ end
 When using with introspection, you need to assign custom introspection to avoid getting the nullable type for a non-null type.
 ```ruby
 class MySchema < GraphQL::Schema
-  introspection ::GraphQL::ResultCache::Introspection
+  introspection GraphQL::ResultCache::Introspection
 end
 ```
 

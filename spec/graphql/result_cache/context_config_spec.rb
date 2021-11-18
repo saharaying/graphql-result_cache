@@ -3,7 +3,6 @@ require 'spec_helper'
 RSpec.describe GraphQL::ResultCache::ContextConfig do
   let(:path) { %w(publishedForm form fields) }
   let(:query) { instance_double('GraphQL::Query') }
-  let(:context) { instance_double('GraphQL::Context', query: query, path: path) }
   let(:result) { instance_double('GraphQL::Result', query: query) }
   let(:cache_key) { 'cache_key' }
   let(:cache_store) { double('cache') }
@@ -24,11 +23,11 @@ RSpec.describe GraphQL::ResultCache::ContextConfig do
       end
 
       it 'should add with nil result' do
-        expect(subject.add(context: context, key: cache_key)).to be_falsey
+        expect(subject.add(query: query, path: path, key: cache_key)).to be_falsey
       end
 
       it 'should add without callback' do
-        expect(subject.add(context: context, key: cache_key, after_process: callback)).to be_falsey
+        expect(subject.add(query: query, path: path, key: cache_key, after_process: callback)).to be_falsey
       end
     end
 
@@ -39,12 +38,12 @@ RSpec.describe GraphQL::ResultCache::ContextConfig do
       end
 
       it 'should add with cached result' do
-        expect(subject.add(context: context, key: cache_key)).to be_truthy
+        expect(subject.add(query: query, path: path, key: cache_key)).to be_truthy
         expect(subject.value[query]).to eq [path: path, key: cache_key, result: 'cached_result']
       end
 
       it 'should add with callback' do
-        expect(subject.add(context: context, key: cache_key, after_process: callback)).to be_truthy
+        expect(subject.add(query: query, path: path, key: cache_key, after_process: callback)).to be_truthy
         expect(subject.value[query]).to eq [path: path, key: cache_key, result: 'cached_result', after_process: callback]
       end
     end
