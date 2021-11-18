@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ['saharaying@gmail.com']
 
   spec.summary       = 'A result caching plugin for graphql-ruby'
-  spec.description   = 'A result caching plugin for graphql-ruby'
+  spec.description   = 'This gem is to cache the json result, instead of resolved object.'
   spec.homepage      = 'https://github.com/saharaying/graphql-result_cache'
   spec.license       = 'MIT'
 
@@ -19,8 +19,8 @@ Gem::Specification.new do |spec|
   end
   spec.require_paths = ['lib']
 
-  spec.add_development_dependency 'bundler', '>= 2.2.10'
-  spec.add_development_dependency 'rake', '>= 12.3.3'
+  spec.add_development_dependency 'bundler', '~> 2.2', '>= 2.2.10'
+  spec.add_development_dependency 'rake', '~> 12.3', '>= 12.3.3'
   spec.add_development_dependency 'rspec', '~> 3.10'
 
   spec.add_dependency 'graphql', '~> 1.10'

@@ -9,7 +9,7 @@ GEM
   specs:
     diff-lcs (1.4.4)
     graphql (1.12.20)
-    rake (13.0.1)
+    rake (12.3.3)
     rspec (3.10.0)
       rspec-core (~> 3.10.0)
       rspec-expectations (~> 3.10.0)
@@ -28,9 +28,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler (>= 2.2.10)
+  bundler (~> 2.2, >= 2.2.10)
   graphql-result_cache!
-  rake (>= 12.3.3)
+  rake (~> 12.3, >= 12.3.3)
   rspec (~> 3.10)
 
 BUNDLED WITH
