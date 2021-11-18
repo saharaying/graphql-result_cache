@@ -1,14 +1,14 @@
 PATH
   remote: .
   specs:
-    graphql-result_cache (0.1.8)
+    graphql-result_cache (1.0.0)
       graphql (~> 1.10)
 
 GEM
   remote: https://rubygems.org/
   specs:
     diff-lcs (1.4.4)
-    graphql (1.12.19)
+    graphql (1.12.20)
     rake (13.0.1)
     rspec (3.10.0)
       rspec-core (~> 3.10.0)
